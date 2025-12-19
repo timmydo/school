@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plural Spelling Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .word-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .word-label {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .singular-word {
+            font-size: 3rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .input-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        #answer-input {
+            font-size: 1.5rem;
+            padding: 15px 25px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #answer-input:focus {
+            border-color: #667eea;
+        }
+
+        .button-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            display: block;
+        }
+
+        .feedback.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            display: block;
+        }
+
+        .attempts {
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .current-score {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .quiz-complete {
+            text-align: center;
+            display: none;
+        }
+
+        .quiz-complete h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .score-history {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .score-history h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .score-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .score-list li {
+            padding: 10px 15px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .score-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .quiz-number {
+            color: #666;
+        }
+
+        .quiz-score {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .total-score {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .instructions {
+            background: #f0f4ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .quiz-card {
+                padding: 25px;
+            }
+
+            .singular-word {
+                font-size: 2rem;
+            }
+
+            #answer-input {
+                font-size: 1.2rem;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Plural Spelling Quiz</h1>
+            <p>Learn to spell plural words!</p>
+        </header>
+
+        <div class="quiz-card">
+            <!-- Start Screen -->
+            <div id="start-screen" class="start-screen">
+                <h2>Welcome to the Plural Spelling Quiz!</h2>
+                <div class="instructions">
+                    <ul>
+                        <li>You will be shown 10 words, one at a time</li>
+                        <li>Type the <strong>plural</strong> form of each word</li>
+                        <li>You get <strong>2 attempts</strong> for each word</li>
+                        <li>Try to get the highest score!</li>
+                    </ul>
+                </div>
+                <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="quiz-screen" style="display: none;">
+                <div class="progress-text">Word <span id="current-word-num">1</span> of 10</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 10%;"></div>
+                </div>
+
+                <div class="word-display">
+                    <div class="word-label">What is the plural of:</div>
+                    <div class="singular-word" id="singular-word">cat</div>
+                </div>
+
+                <div class="input-section">
+                    <label class="input-label" for="answer-input">Type the plural form:</label>
+                    <input type="text" id="answer-input" autocomplete="off" autocapitalize="none" spellcheck="false">
+                </div>
+
+                <div class="button-section">
+                    <button class="btn btn-primary" id="submit-btn" onclick="checkAnswer()">Submit</button>
+                    <button class="btn btn-success" id="next-btn" onclick="nextWord()" style="display: none;">Next Word</button>
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+                <div class="attempts" id="attempts">Attempts remaining: 2</div>
+                <div class="current-score">Score: <span id="current-score">0</span> / <span id="max-score">0</span></div>
+            </div>
+
+            <!-- Quiz Complete Screen -->
+            <div id="complete-screen" class="quiz-complete">
+                <h2>Quiz Complete!</h2>
+                <div class="final-score" id="final-score">8 / 10</div>
+                <button class="btn btn-success" onclick="startQuiz()">Try Again</button>
+            </div>
+        </div>
+
+        <!-- Score History -->
+        <div class="score-history" id="score-history" style="display: none;">
+            <h3>Session Scores</h3>
+            <ul class="score-list" id="score-list"></ul>
+            <div class="total-score">
+                Total: <span id="total-correct">0</span> / <span id="total-possible">0</span>
+                (<span id="total-percentage">0</span>%)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Balanced word list for 3rd graders - even distribution of plural types
+        const wordList = [
+            // ========== REGULAR -S PLURALS (70 words) ==========
+            // Simple words where you just add -s
+            {singular: "cat", plural: "cats"},
+            {singular: "dog", plural: "dogs"},
+            {singular: "bird", plural: "birds"},
+            {singular: "car", plural: "cars"},
+            {singular: "book", plural: "books"},
+            {singular: "tree", plural: "trees"},
+            {singular: "chair", plural: "chairs"},
+            {singular: "table", plural: "tables"},
+            {singular: "door", plural: "doors"},
+            {singular: "room", plural: "rooms"},
+            {singular: "ball", plural: "balls"},
+            {singular: "hat", plural: "hats"},
+            {singular: "cup", plural: "cups"},
+            {singular: "bed", plural: "beds"},
+            {singular: "lamp", plural: "lamps"},
+            {singular: "star", plural: "stars"},
+            {singular: "boat", plural: "boats"},
+            {singular: "train", plural: "trains"},
+            {singular: "plane", plural: "planes"},
+            {singular: "bear", plural: "bears"},
+            {singular: "lion", plural: "lions"},
+            {singular: "tiger", plural: "tigers"},
+            {singular: "desk", plural: "desks"},
+            {singular: "pen", plural: "pens"},
+            {singular: "bag", plural: "bags"},
+            {singular: "coin", plural: "coins"},
+            {singular: "girl", plural: "girls"},
+            {singular: "boy", plural: "boys"},
+            {singular: "friend", plural: "friends"},
+            {singular: "hand", plural: "hands"},
+            {singular: "arm", plural: "arms"},
+            {singular: "leg", plural: "legs"},
+            {singular: "ear", plural: "ears"},
+            {singular: "eye", plural: "eyes"},
+            {singular: "nail", plural: "nails"},
+            {singular: "rock", plural: "rocks"},
+            {singular: "hill", plural: "hills"},
+            {singular: "road", plural: "roads"},
+            {singular: "pool", plural: "pools"},
+            {singular: "farm", plural: "farms"},
+            {singular: "barn", plural: "barns"},
+            {singular: "wheel", plural: "wheels"},
+            {singular: "spoon", plural: "spoons"},
+            {singular: "bowl", plural: "bowls"},
+            {singular: "plate", plural: "plates"},
+            {singular: "sock", plural: "socks"},
+            {singular: "shirt", plural: "shirts"},
+            {singular: "coat", plural: "coats"},
+            {singular: "boot", plural: "boots"},
+            {singular: "dream", plural: "dreams"},
+            {singular: "cloud", plural: "clouds"},
+            {singular: "plant", plural: "plants"},
+            {singular: "flower", plural: "flowers"},
+            {singular: "seed", plural: "seeds"},
+            {singular: "bell", plural: "bells"},
+            {singular: "clock", plural: "clocks"},
+            {singular: "gift", plural: "gifts"},
+            {singular: "tool", plural: "tools"},
+            {singular: "nail", plural: "nails"},
+            {singular: "screw", plural: "screws"},
+            {singular: "brick", plural: "bricks"},
+            {singular: "block", plural: "blocks"},
+            {singular: "doll", plural: "dolls"},
+            {singular: "robot", plural: "robots"},
+            {singular: "card", plural: "cards"},
+            {singular: "owl", plural: "owls"},
+            {singular: "frog", plural: "frogs"},
+            {singular: "snail", plural: "snails"},
+            {singular: "seal", plural: "seals"},
+            {singular: "storm", plural: "storms"},
+
+            // ========== -ES PLURALS (80 words) ==========
+            // Words ending in s, x, z, ch, sh, or sometimes o
+            {singular: "box", plural: "boxes"},
+            {singular: "fox", plural: "foxes"},
+            {singular: "bus", plural: "buses"},
+            {singular: "class", plural: "classes"},
+            {singular: "glass", plural: "glasses"},
+            {singular: "dress", plural: "dresses"},
+            {singular: "kiss", plural: "kisses"},
+            {singular: "boss", plural: "bosses"},
+            {singular: "mess", plural: "messes"},
+            {singular: "pass", plural: "passes"},
+            {singular: "loss", plural: "losses"},
+            {singular: "cross", plural: "crosses"},
+            {singular: "miss", plural: "misses"},
+            {singular: "guess", plural: "guesses"},
+            {singular: "tax", plural: "taxes"},
+            {singular: "mix", plural: "mixes"},
+            {singular: "fix", plural: "fixes"},
+            {singular: "wax", plural: "waxes"},
+            {singular: "fax", plural: "faxes"},
+            {singular: "six", plural: "sixes"},
+            {singular: "buzz", plural: "buzzes"},
+            {singular: "fizz", plural: "fizzes"},
+            {singular: "jazz", plural: "jazzes"},
+            {singular: "quiz", plural: "quizzes"},
+            {singular: "fuzz", plural: "fuzzes"},
+            {singular: "church", plural: "churches"},
+            {singular: "beach", plural: "beaches"},
+            {singular: "peach", plural: "peaches"},
+            {singular: "coach", plural: "coaches"},
+            {singular: "poach", plural: "poaches"},
+            {singular: "lunch", plural: "lunches"},
+            {singular: "bunch", plural: "bunches"},
+            {singular: "punch", plural: "punches"},
+            {singular: "branch", plural: "branches"},
+            {singular: "ranch", plural: "ranches"},
+            {singular: "bench", plural: "benches"},
+            {singular: "inch", plural: "inches"},
+            {singular: "match", plural: "matches"},
+            {singular: "catch", plural: "catches"},
+            {singular: "watch", plural: "watches"},
+            {singular: "patch", plural: "patches"},
+            {singular: "batch", plural: "batches"},
+            {singular: "latch", plural: "latches"},
+            {singular: "scratch", plural: "scratches"},
+            {singular: "stretch", plural: "stretches"},
+            {singular: "switch", plural: "switches"},
+            {singular: "ditch", plural: "ditches"},
+            {singular: "pitch", plural: "pitches"},
+            {singular: "stitch", plural: "stitches"},
+            {singular: "witch", plural: "witches"},
+            {singular: "brush", plural: "brushes"},
+            {singular: "bush", plural: "bushes"},
+            {singular: "crush", plural: "crushes"},
+            {singular: "push", plural: "pushes"},
+            {singular: "rush", plural: "rushes"},
+            {singular: "wish", plural: "wishes"},
+            {singular: "dish", plural: "dishes"},
+            {singular: "fish", plural: "fishes"},
+            {singular: "flash", plural: "flashes"},
+            {singular: "crash", plural: "crashes"},
+            {singular: "trash", plural: "trashes"},
+            {singular: "splash", plural: "splashes"},
+            {singular: "smash", plural: "smashes"},
+            {singular: "rash", plural: "rashes"},
+            {singular: "dash", plural: "dashes"},
+            {singular: "cash", plural: "cashes"},
+            {singular: "leash", plural: "leashes"},
+            {singular: "eyelash", plural: "eyelashes"},
+            {singular: "tomato", plural: "tomatoes"},
+            {singular: "potato", plural: "potatoes"},
+            {singular: "hero", plural: "heroes"},
+            {singular: "echo", plural: "echoes"},
+            {singular: "tornado", plural: "tornadoes"},
+            {singular: "volcano", plural: "volcanoes"},
+            {singular: "mosquito", plural: "mosquitoes"},
+            {singular: "domino", plural: "dominoes"},
+            {singular: "mango", plural: "mangoes"},
+            {singular: "cargo", plural: "cargoes"},
+            {singular: "walrus", plural: "walruses"},
+            {singular: "circus", plural: "circuses"},
+
+            // ========== -IES PLURALS (80 words) ==========
+            // Words ending in consonant + y, change y to ies
+            {singular: "baby", plural: "babies"},
+            {singular: "lady", plural: "ladies"},
+            {singular: "city", plural: "cities"},
+            {singular: "party", plural: "parties"},
+            {singular: "story", plural: "stories"},
+            {singular: "berry", plural: "berries"},
+            {singular: "cherry", plural: "cherries"},
+            {singular: "fairy", plural: "fairies"},
+            {singular: "dairy", plural: "dairies"},
+            {singular: "family", plural: "families"},
+            {singular: "puppy", plural: "puppies"},
+            {singular: "bunny", plural: "bunnies"},
+            {singular: "pony", plural: "ponies"},
+            {singular: "penny", plural: "pennies"},
+            {singular: "candy", plural: "candies"},
+            {singular: "body", plural: "bodies"},
+            {singular: "copy", plural: "copies"},
+            {singular: "hobby", plural: "hobbies"},
+            {singular: "lobby", plural: "lobbies"},
+            {singular: "ruby", plural: "rubies"},
+            {singular: "army", plural: "armies"},
+            {singular: "navy", plural: "navies"},
+            {singular: "library", plural: "libraries"},
+            {singular: "factory", plural: "factories"},
+            {singular: "bakery", plural: "bakeries"},
+            {singular: "grocery", plural: "groceries"},
+            {singular: "delivery", plural: "deliveries"},
+            {singular: "discovery", plural: "discoveries"},
+            {singular: "battery", plural: "batteries"},
+            {singular: "mystery", plural: "mysteries"},
+            {singular: "history", plural: "histories"},
+            {singular: "memory", plural: "memories"},
+            {singular: "category", plural: "categories"},
+            {singular: "activity", plural: "activities"},
+            {singular: "ability", plural: "abilities"},
+            {singular: "possibility", plural: "possibilities"},
+            {singular: "responsibility", plural: "responsibilities"},
+            {singular: "country", plural: "countries"},
+            {singular: "century", plural: "centuries"},
+            {singular: "boundary", plural: "boundaries"},
+            {singular: "dictionary", plural: "dictionaries"},
+            {singular: "canary", plural: "canaries"},
+            {singular: "iciary", plural: "judiciaries"},
+            {singular: "strawberry", plural: "strawberries"},
+            {singular: "blueberry", plural: "blueberries"},
+            {singular: "raspberry", plural: "raspberries"},
+            {singular: "blackberry", plural: "blackberries"},
+            {singular: "cranberry", plural: "cranberries"},
+            {singular: "butterfly", plural: "butterflies"},
+            {singular: "dragonfly", plural: "dragonflies"},
+            {singular: "firefly", plural: "fireflies"},
+            {singular: "fly", plural: "flies"},
+            {singular: "sky", plural: "skies"},
+            {singular: "spy", plural: "spies"},
+            {singular: "cry", plural: "cries"},
+            {singular: "fry", plural: "fries"},
+            {singular: "try", plural: "tries"},
+            {singular: "reply", plural: "replies"},
+            {singular: "supply", plural: "supplies"},
+            {singular: "apply", plural: "applies"},
+            {singular: "multiply", plural: "multiplies"},
+            {singular: "lily", plural: "lilies"},
+            {singular: "daisy", plural: "daisies"},
+            {singular: "pansy", plural: "pansies"},
+            {singular: "poppy", plural: "poppies"},
+            {singular: "jelly", plural: "jellies"},
+            {singular: "belly", plural: "bellies"},
+            {singular: "bully", plural: "bullies"},
+            {singular: "buddy", plural: "buddies"},
+            {singular: "daddy", plural: "daddies"},
+            {singular: "mommy", plural: "mommies"},
+            {singular: "nanny", plural: "nannies"},
+            {singular: "granny", plural: "grannies"},
+            {singular: "teddy", plural: "teddies"},
+            {singular: "trophy", plural: "trophies"},
+            {singular: "ferry", plural: "ferries"},
+            {singular: "hurry", plural: "hurries"},
+            {singular: "worry", plural: "worries"},
+            {singular: "curry", plural: "curries"},
+            {singular: "fury", plural: "furies"},
+
+            // ========== -VES PLURALS (50 words) ==========
+            // Words ending in f or fe, change to ves
+            {singular: "leaf", plural: "leaves"},
+            {singular: "loaf", plural: "loaves"},
+            {singular: "half", plural: "halves"},
+            {singular: "calf", plural: "calves"},
+            {singular: "elf", plural: "elves"},
+            {singular: "self", plural: "selves"},
+            {singular: "shelf", plural: "shelves"},
+            {singular: "wolf", plural: "wolves"},
+            {singular: "life", plural: "lives"},
+            {singular: "wife", plural: "wives"},
+            {singular: "knife", plural: "knives"},
+            {singular: "thief", plural: "thieves"},
+            {singular: "scarf", plural: "scarves"},
+            {singular: "dwarf", plural: "dwarves"},
+            {singular: "wharf", plural: "wharves"},
+            {singular: "hoof", plural: "hooves"},
+            {singular: "roof", plural: "rooves"},
+            {singular: "yourself", plural: "yourselves"},
+            {singular: "myself", plural: "ourselves"},
+            {singular: "himself", plural: "themselves"},
+            {singular: "herself", plural: "themselves"},
+            {singular: "itself", plural: "themselves"},
+            {singular: "bookshelf", plural: "bookshelves"},
+            {singular: "housewife", plural: "housewives"},
+            {singular: "midwife", plural: "midwives"},
+            {singular: "penknife", plural: "penknives"},
+            {singular: "jackknife", plural: "jackknives"},
+            {singular: "wildlife", plural: "wildlives"},
+            {singular: "werewolf", plural: "werewolves"},
+            {singular: "sheaf", plural: "sheaves"},
+            // Note: Some words can go either way (roofs/rooves, scarfs/scarves)
+            // Using the -ves form for educational purposes
+
+            // ========== IRREGULAR PLURALS (50 words) ==========
+            // Words with completely irregular plural forms
+            {singular: "man", plural: "men"},
+            {singular: "woman", plural: "women"},
+            {singular: "child", plural: "children"},
+            {singular: "tooth", plural: "teeth"},
+            {singular: "foot", plural: "feet"},
+            {singular: "goose", plural: "geese"},
+            {singular: "mouse", plural: "mice"},
+            {singular: "louse", plural: "lice"},
+            {singular: "person", plural: "people"},
+            {singular: "ox", plural: "oxen"},
+            {singular: "die", plural: "dice"},
+            {singular: "cactus", plural: "cacti"},
+            {singular: "fungus", plural: "fungi"},
+            {singular: "nucleus", plural: "nuclei"},
+            {singular: "radius", plural: "radii"},
+            {singular: "focus", plural: "foci"},
+            {singular: "stimulus", plural: "stimuli"},
+            {singular: "alumnus", plural: "alumni"},
+            {singular: "syllabus", plural: "syllabi"},
+            {singular: "octopus", plural: "octopi"},
+            {singular: "analysis", plural: "analyses"},
+            {singular: "basis", plural: "bases"},
+            {singular: "crisis", plural: "crises"},
+            {singular: "thesis", plural: "theses"},
+            {singular: "oasis", plural: "oases"},
+            {singular: "axis", plural: "axes"},
+            {singular: "appendix", plural: "appendices"},
+            {singular: "index", plural: "indices"},
+            {singular: "matrix", plural: "matrices"},
+            {singular: "vertex", plural: "vertices"},
+            {singular: "phenomenon", plural: "phenomena"},
+            {singular: "criterion", plural: "criteria"},
+            {singular: "bacterium", plural: "bacteria"},
+            {singular: "medium", plural: "media"},
+            {singular: "datum", plural: "data"},
+            {singular: "curriculum", plural: "curricula"},
+            {singular: "memorandum", plural: "memoranda"},
+            {singular: "millennium", plural: "millennia"},
+            {singular: "aquarium", plural: "aquaria"},
+            {singular: "stadium", plural: "stadia"},
+            {singular: "gymnasium", plural: "gymnasia"},
+            {singular: "formula", plural: "formulae"},
+            {singular: "antenna", plural: "antennae"},
+            {singular: "larva", plural: "larvae"},
+            {singular: "vertebra", plural: "vertebrae"},
+            {singular: "alumna", plural: "alumnae"},
+            {singular: "fireman", plural: "firemen"},
+            {singular: "policeman", plural: "policemen"},
+            {singular: "gentleman", plural: "gentlemen"},
+            {singular: "snowman", plural: "snowmen"},
+
+            // ========== UNCHANGED PLURALS (20 words) ==========
+            // Words that stay the same in plural form
+            {singular: "sheep", plural: "sheep"},
+            {singular: "deer", plural: "deer"},
+            {singular: "fish", plural: "fish"},
+            {singular: "moose", plural: "moose"},
+            {singular: "buffalo", plural: "buffalo"},
+            {singular: "salmon", plural: "salmon"},
+            {singular: "trout", plural: "trout"},
+            {singular: "tuna", plural: "tuna"},
+            {singular: "shrimp", plural: "shrimp"},
+            {singular: "squid", plural: "squid"},
+            {singular: "aircraft", plural: "aircraft"},
+            {singular: "spacecraft", plural: "spacecraft"},
+            {singular: "series", plural: "series"},
+            {singular: "species", plural: "species"},
+            {singular: "scissors", plural: "scissors"},
+            {singular: "glasses", plural: "glasses"},
+            {singular: "pants", plural: "pants"},
+            {singular: "shorts", plural: "shorts"},
+            {singular: "jeans", plural: "jeans"},
+            {singular: "pajamas", plural: "pajamas"}
+        ];
+
+        // Quiz state
+        let currentWords = [];
+        let currentIndex = 0;
+        let attemptsRemaining = 2;
+        let currentScore = 0;
+        let sessionScores = [];
+
+        // DOM elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const completeScreen = document.getElementById('complete-screen');
+        const scoreHistory = document.getElementById('score-history');
+        const singularWord = document.getElementById('singular-word');
+        const answerInput = document.getElementById('answer-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedback = document.getElementById('feedback');
+        const attemptsDisplay = document.getElementById('attempts');
+        const currentScoreDisplay = document.getElementById('current-score');
+        const maxScoreDisplay = document.getElementById('max-score');
+        const currentWordNum = document.getElementById('current-word-num');
+        const progressFill = document.getElementById('progress-fill');
+        const finalScore = document.getElementById('final-score');
+        const scoreList = document.getElementById('score-list');
+        const totalCorrect = document.getElementById('total-correct');
+        const totalPossible = document.getElementById('total-possible');
+        const totalPercentage = document.getElementById('total-percentage');
+
+        // Shuffle array using Fisher-Yates algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Select 10 random words
+        function selectRandomWords() {
+            const shuffled = shuffleArray(wordList);
+            return shuffled.slice(0, 10);
+        }
+
+        // Start a new quiz
+        function startQuiz() {
+            currentWords = selectRandomWords();
+            currentIndex = 0;
+            attemptsRemaining = 2;
+            currentScore = 0;
+
+            startScreen.style.display = 'none';
+            completeScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+
+            displayWord();
+            updateScore();
+        }
+
+        // Display current word
+        function displayWord() {
+            const word = currentWords[currentIndex];
+            singularWord.textContent = word.singular;
+            answerInput.value = '';
+            answerInput.focus();
+            attemptsRemaining = 2;
+
+            submitBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+            feedback.className = 'feedback';
+            feedback.textContent = '';
+
+            updateAttempts();
+            updateProgress();
+        }
+
+        // Update progress bar and word number
+        function updateProgress() {
+            currentWordNum.textContent = currentIndex + 1;
+            const percentage = ((currentIndex + 1) / 10) * 100;
+            progressFill.style.width = percentage + '%';
+        }
+
+        // Update attempts display
+        function updateAttempts() {
+            attemptsDisplay.textContent = `Attempts remaining: ${attemptsRemaining}`;
+        }
+
+        // Update score display
+        function updateScore() {
+            currentScoreDisplay.textContent = currentScore;
+            maxScoreDisplay.textContent = (currentIndex + 1);
+        }
+
+        // Check the answer
+        function checkAnswer() {
+            const word = currentWords[currentIndex];
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            const correctAnswer = word.plural.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                // Correct answer
+                currentScore++;
+                feedback.className = 'feedback correct';
+                feedback.textContent = `Correct! "${word.singular}" becomes "${word.plural}"`;
+
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'inline-block';
+                answerInput.disabled = true;
+            } else {
+                // Wrong answer
+                attemptsRemaining--;
+                updateAttempts();
+
+                if (attemptsRemaining > 0) {
+                    feedback.className = 'feedback incorrect';
+                    feedback.textContent = `Not quite! Try again. You have ${attemptsRemaining} attempt left.`;
+                    answerInput.value = '';
+                    answerInput.focus();
+                } else {
+                    // No more attempts
+                    feedback.className = 'feedback info';
+                    feedback.textContent = `The correct answer is "${word.plural}"`;
+
+                    submitBtn.style.display = 'none';
+                    nextBtn.style.display = 'inline-block';
+                    answerInput.disabled = true;
+                }
+            }
+
+            updateScore();
+        }
+
+        // Move to next word
+        function nextWord() {
+            answerInput.disabled = false;
+            currentIndex++;
+
+            if (currentIndex >= 10) {
+                endQuiz();
+            } else {
+                displayWord();
+            }
+        }
+
+        // End the quiz
+        function endQuiz() {
+            quizScreen.style.display = 'none';
+            completeScreen.style.display = 'block';
+
+            finalScore.textContent = `${currentScore} / 10`;
+
+            // Add score to history
+            sessionScores.push(currentScore);
+            updateScoreHistory();
+        }
+
+        // Update score history display
+        function updateScoreHistory() {
+            scoreHistory.style.display = 'block';
+
+            scoreList.innerHTML = '';
+            sessionScores.forEach((score, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="quiz-number">Quiz ${index + 1}</span>
+                    <span class="quiz-score">${score} / 10</span>
+                `;
+                scoreList.appendChild(li);
+            });
+
+            // Calculate totals
+            const total = sessionScores.reduce((sum, score) => sum + score, 0);
+            const possible = sessionScores.length * 10;
+            const percentage = Math.round((total / possible) * 100);
+
+            totalCorrect.textContent = total;
+            totalPossible.textContent = possible;
+            totalPercentage.textContent = percentage;
+        }
+
+        // Handle Enter key on input for submitting answers
+        answerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && submitBtn.style.display !== 'none') {
+                checkAnswer();
+            }
+        });
+
+        // Handle Enter key globally for advancing to next word or starting new quiz
+        // (needed because input is disabled after answering)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                // If quiz is complete, start a new quiz
+                if (completeScreen.style.display !== 'none') {
+                    e.preventDefault();
+                    startQuiz();
+                }
+                // If next button is visible, advance to next word
+                else if (nextBtn.style.display !== 'none') {
+                    e.preventDefault();
+                    nextWord();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
