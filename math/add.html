@@ -140,10 +140,21 @@
         .hidden {
             display: none;
         }
+        .invisible {
+            visibility: hidden;
+        }
+        #hide-stats-btn {
+            display: block;
+            margin: 0 auto 20px;
+            font-size: 1em;
+            padding: 8px 16px;
+        }
     </style>
 </head>
 <body>
     <h1>Addition Quiz</h1>
+
+    <button id="hide-stats-btn">Hide Timer and Scores</button>
 
     <div class="quiz-container">
         <div id="start-screen" class="start-screen">
@@ -373,6 +384,19 @@
 
         // Initialize
         renderScores();
+
+        // Hide/show timer and scores
+        const hideStatsBtn = document.getElementById('hide-stats-btn');
+        const timerEl = document.querySelector('.timer');
+        const highScoresEl = document.querySelector('.high-scores');
+        let statsHidden = false;
+
+        hideStatsBtn.addEventListener('click', () => {
+            statsHidden = !statsHidden;
+            timerEl.classList.toggle('invisible', statsHidden);
+            highScoresEl.classList.toggle('invisible', statsHidden);
+            hideStatsBtn.textContent = statsHidden ? 'Show Timer and Scores' : 'Hide Timer and Scores';
+        });
     </script>
 </body>
 </html>
